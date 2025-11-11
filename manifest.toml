@@ -57,4 +57,8 @@ ram.runtime = "50M"
     [resources.sources]
         [resources.sources.main]
         url = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh/archive/refs/heads/main.tar.gz"
+<<<<<<< HEAD
         sha256 = "070ab24ad60e9513c341cf5c2750291124547432875662e7c99f38fdf7740013"
+=======
+        sha256 = "0813bfe84cd1657bafa3c8b65e5c5ca59543724fae23287da2f3ee1f55c1cfb0"
+>>>>>>> 1d0a2a0a74d7501808355b2bcd78876e1b3561c1
