@@ -1,0 +1,51 @@
+name: Auto-update SHA256
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'manifest.toml'
+      - 'scripts/**'
+      - 'conf/**'
+  workflow_dispatch:
+
+jobs:
+  update-sha256:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'Auto-update SHA256') && !contains(github.event.head_commit.message, 'Final SHA256 update')"
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Calculate current SHA256
+      id: calc_sha256
+      run: |
+        CURRENT_SHA256=$(curl -sL https://github.com/${{ github.repository }}/archive/refs/heads/main.tar.gz | sha256sum | cut -d' ' -f1)
+        echo "current_sha256=$CURRENT_SHA256" >> $GITHUB_OUTPUT
+        echo "Current SHA256: $CURRENT_SHA256"
+        
+    - name: Get SHA256 from manifest
+      id: manifest_sha256
+      run: |
+        MANIFEST_SHA256=$(grep 'sha256 = ' manifest.toml | sed 's/.*sha256 = "\([^"]*\)".*/\1/')
+        echo "manifest_sha256=$MANIFEST_SHA256" >> $GITHUB_OUTPUT
+        echo "Manifest SHA256: $MANIFEST_SHA256"
+        
+    - name: Update SHA256 if different
+      if: steps.calc_sha256.outputs.current_sha256 != steps.manifest_sha256.outputs.manifest_sha256
+      run: |
+        NEW_SHA256="${{ steps.calc_sha256.outputs.current_sha256 }}"
+        echo "Updating SHA256 to: $NEW_SHA256"
+        sed -i "s/sha256 = \"[^\"]*\"/sha256 = \"$NEW_SHA256\"/" manifest.toml
+        
+    - name: Commit and push if changed
+      if: steps.calc_sha256.outputs.current_sha256 != steps.manifest_sha256.outputs.manifest_sha256
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add manifest.toml
+        git commit -m "Auto-update SHA256 to ${{ steps.calc_sha256.outputs.current_sha256 }}"
+        git push
