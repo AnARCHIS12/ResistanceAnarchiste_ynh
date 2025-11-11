@@ -79,10 +79,9 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=1
 
-# Download and setup source files
-ynh_setup_source --dest_dir="$install_dir"
-
-# Copy Flask app configuration
+# Copy application files from the package
+cp -a ../frontend "$install_dir/"
+cp -a ../backend "$install_dir/"
 cp -a ../conf/app.py "$install_dir/"
 
 chmod 750 "$install_dir"
