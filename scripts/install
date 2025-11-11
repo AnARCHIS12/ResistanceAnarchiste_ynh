@@ -79,9 +79,11 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=1
 
-# Copy application files from the package
+# Download and setup source files
+ynh_setup_source --dest_dir="$install_dir"
+
+# Copy Flask app configuration
 cp -a ../conf/app.py "$install_dir/"
-mkdir -p "$install_dir/backend" "$install_dir/frontend"
 
 chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
@@ -107,8 +109,6 @@ ynh_script_progression --message="Installing Python dependencies..." --weight=1
 pushd "$install_dir"
 	python3 -m venv venv
 	venv/bin/pip install --upgrade pip
-	# Create minimal requirements.txt if not exists
-	echo "flask" > backend/requirements.txt
 	venv/bin/pip install -r backend/requirements.txt
 popd
 
@@ -118,28 +118,9 @@ popd
 ynh_script_progression --message="Installing Node.js dependencies and building frontend..." --weight=1
 
 pushd "$install_dir/frontend"
-	# Create minimal package.json if not exists
-	echo '{"name":"frontend","scripts":{"build":"echo build"}}' > package.json
 	ynh_use_nodejs
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npm install
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npm run build
-	
-	# Create build directory with basic index.html
-	mkdir -p build
-	cat > build/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Résistance Anarchiste</title>
-</head>
-<body>
-    <h1>Résistance Anarchiste</h1>
-    <p>Application installée avec succès!</p>
-</body>
-</html>
-EOF
 	chown -R $app:www-data build
 popd
 
