@@ -1,0 +1,68 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/master/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "resistance-anarchiste"
+name = "Résistance Anarchiste"
+description.en = "Anarchist resistance web platform - Manifesto, visuals, and collective network"
+description.fr = "Plateforme web de résistance anarchiste - Manifeste, visuels et réseau de collectifs"
+
+version = "1.0~ynh1"
+
+maintainers = ["resistance-anarchiste"]
+
+[upstream]
+license = "GPL-3.0"
+website = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh"
+demo = "https://demo.resistance-anarchiste.org"
+admindoc = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh/blob/main/README.md"
+userdoc = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh/blob/main/README.md"
+code = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh"
+
+[integration]
+yunohost = ">= 11.2"
+architectures = "all"
+multi_instance = true
+ldap = false
+sso = false
+disk = "50M"
+ram.build = "500M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/resistance"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
+    [install.language]
+    type = "select"
+    choices = ["fr", "en"]
+    default = "fr"
+
+    [install.admin]
+    type = "user"
+
+[resources]
+    [resources.sources]
+        [resources.sources.main]
+        url = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh/archive/refs/heads/main.tar.gz"
+        sha256 = "90a181823c8fcb78b8287ab944a733c10bb5baafbd7dd4de3e1e4744e7a7bb80"
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.ports]
+
+    [resources.apt]
+    packages = "python3, python3-pip, python3-venv, nodejs, npm, build-essential"
