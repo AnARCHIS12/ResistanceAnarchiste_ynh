@@ -6,9 +6,9 @@ After=network.target
 Type=simple
 User=__APP__
 Group=__APP__
-WorkingDirectory=__FINALPATH__
-Environment="PATH=__FINALPATH__/venv/bin"
-ExecStart=__FINALPATH__/venv/bin/python app.py
+WorkingDirectory=__INSTALL_DIR__
+Environment="PATH=__INSTALL_DIR__/venv/bin"
+ExecStart=__INSTALL_DIR__/venv/bin/python app.py
 Restart=on-failure
 RestartSec=10
 
