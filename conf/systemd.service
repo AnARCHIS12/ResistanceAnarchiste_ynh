@@ -7,8 +7,8 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__
-Environment="PATH=__INSTALL_DIR__/venv/bin"
-ExecStart=__INSTALL_DIR__/venv/bin/python app.py
+Environment="PATH=__INSTALL_DIR__/venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=__INSTALL_DIR__/venv/bin/python3 __INSTALL_DIR__/app.py
 Restart=on-failure
 RestartSec=10
 
