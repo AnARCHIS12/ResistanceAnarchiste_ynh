@@ -26,8 +26,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
-language=$YNH_APP_ARG_LANGUAGE
+password=$YNH_APP_ARG_PASSWORD
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -50,7 +49,7 @@ ynh_script_progression --message="Storing installation settings..." --weight=1
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=language --value=$language
+ynh_app_setting_set --app=$app --key=password --value=$password
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -84,8 +83,9 @@ ynh_system_user_create --username=$app --home_dir="$final_path"
 ynh_script_progression --message="Setting up source files..." --weight=1
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path"
+# Copy application files from the package
+cp -a ../conf/app.py "$final_path/"
+mkdir -p "$final_path/backend" "$final_path/frontend"
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
@@ -162,7 +162,7 @@ ynh_add_systemd_config
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --description="Résistance Anarchiste web platform" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="Contacts Libres CNT-AIT" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -185,13 +185,7 @@ ynh_use_logrotate
 #=================================================
 ynh_script_progression --message="Configuring permissions..." --weight=1
 
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-	# Everyone can access the app.
-	# The "main" permission is automatically created before the install script.
-	ynh_permission_update --permission="main" --add="visitors"
-fi
+# The app is private by default, only the admin can access it
 
 #=================================================
 # RELOAD NGINX

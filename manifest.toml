@@ -39,6 +39,15 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
+    [install.is_public]
+    type = "boolean"
+    default = true
+
+    [install.language]
+    type = "select"
+    choices = ["fr", "en"]
+    default = "fr"
+
 [resources]
     [resources.system_user]
 
