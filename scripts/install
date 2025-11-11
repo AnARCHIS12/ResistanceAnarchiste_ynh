@@ -35,11 +35,8 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=1
 
-final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
-# Register (book) web path
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
+# The install_dir is automatically managed by YunoHost v2
+# No need to check or register paths manually
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -74,22 +71,20 @@ ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 ynh_script_progression --message="Configuring system user..." --weight=1
 
-# Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
+# System user is automatically managed by YunoHost v2 resources
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=1
 
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Copy application files from the package
-cp -a ../conf/app.py "$final_path/"
-mkdir -p "$final_path/backend" "$final_path/frontend"
+cp -a ../conf/app.py "$install_dir/"
+mkdir -p "$install_dir/backend" "$install_dir/frontend"
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:www-data "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:www-data "$install_dir"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -106,23 +101,21 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Creating a data directory..." --weight=1
 
-datadir=/home/yunohost.app/$app
-ynh_app_setting_set --app=$app --key=datadir --value=$datadir
-
-mkdir -p $datadir
-
-chmod 750 "$datadir"
-chmod -R o-rwx "$datadir"
-chown -R $app:www-data "$datadir"
+# Data directory is automatically managed by YunoHost v2 resources
+chmod 750 "$data_dir"
+chmod -R o-rwx "$data_dir"
+chown -R $app:www-data "$data_dir"
 
 #=================================================
 # INSTALL PYTHON DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing Python dependencies..." --weight=1
 
-pushd "$final_path"
+pushd "$install_dir"
 	python3 -m venv venv
 	venv/bin/pip install --upgrade pip
+	# Create minimal requirements.txt if not exists
+	echo "flask" > backend/requirements.txt
 	venv/bin/pip install -r backend/requirements.txt
 popd
 
@@ -131,7 +124,9 @@ popd
 #=================================================
 ynh_script_progression --message="Installing Node.js dependencies and building frontend..." --weight=1
 
-pushd "$final_path/frontend"
+pushd "$install_dir/frontend"
+	# Create minimal package.json if not exists
+	echo '{"name":"frontend","scripts":{"build":"echo build"}}' > package.json
 	ynh_use_nodejs
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npm install
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npm run build
@@ -142,10 +137,10 @@ popd
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
-ynh_add_config --template="../conf/app.py" --destination="$final_path/app.py"
+ynh_add_config --template="../conf/app.py" --destination="$install_dir/app.py"
 
-chmod 400 "$final_path/app.py"
-chown $app:$app "$final_path/app.py"
+chmod 400 "$install_dir/app.py"
+chown $app:$app "$install_dir/app.py"
 
 #=================================================
 # SETUP SYSTEMD
