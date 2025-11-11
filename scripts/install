@@ -130,6 +130,10 @@ popd
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
+# Generate secret key
+secret_key=$(ynh_string_random --length=32)
+ynh_app_setting_set --app=$app --key=secret_key --value=$secret_key
+
 ynh_add_config --template="../conf/app.py" --destination="$install_dir/app.py"
 
 chmod 400 "$install_dir/app.py"
