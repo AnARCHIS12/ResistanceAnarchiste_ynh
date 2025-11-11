@@ -9,7 +9,7 @@ import SitesPage from "./pages/SitesPage";
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <BrowserRouter basename="/resistance">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/visuels" element={<VisuelsPage />} />
