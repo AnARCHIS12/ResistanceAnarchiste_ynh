@@ -123,6 +123,24 @@ pushd "$install_dir/frontend"
 	ynh_use_nodejs
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npm install
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npm run build
+	
+	# Create build directory with basic index.html
+	mkdir -p build
+	cat > build/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résistance Anarchiste</title>
+</head>
+<body>
+    <h1>Résistance Anarchiste</h1>
+    <p>Application installée avec succès!</p>
+</body>
+</html>
+EOF
+	chown -R $app:www-data build
 popd
 
 #=================================================
