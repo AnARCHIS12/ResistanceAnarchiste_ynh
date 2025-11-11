@@ -63,7 +63,3 @@ ram.runtime = "50M"
     [resources.apt]
     packages = ["curl", "gnupg", "python3", "python3-pip", "python3-venv", "nodejs", "npm", "build-essential"]
 
-    [resources.sources]
-        [resources.sources.main]
-        url = "https://github.com/AnARCHIS12/ResistanceAnarchiste_ynh/archive/refs/heads/main.tar.gz"
-        sha256 = "0813bfe84cd1657bafa3c8b65e5c5ca59543724fae23287da2f3ee1f55c1cfb0"
