@@ -103,9 +103,12 @@ ynh_add_nginx_config
 ynh_script_progression --message="Creating a data directory..." --weight=1
 
 # Data directory is automatically managed by YunoHost v2 resources
-chmod 750 "$data_dir"
-chmod -R o-rwx "$data_dir"
-chown -R $app:www-data "$data_dir"
+# Only set permissions if data_dir exists
+if [ -d "$data_dir" ]; then
+    chmod 750 "$data_dir"
+    chmod -R o-rwx "$data_dir"
+    chown -R $app:www-data "$data_dir"
+fi
 
 #=================================================
 # INSTALL PYTHON DEPENDENCIES
